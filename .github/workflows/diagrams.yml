@@ -15,11 +15,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate SVG diagrams
-        uses: timonwibmer/generate-plantuml-action@v1
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          path: 'diagrams/'
-          message: 'Generate PlantUML diagrams to SVG'
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download PlantUML
+        run: |
+          wget https://github.com/plantuml/plantuml/releases/download/v1.2024.6/plantuml.jar
+
+      - name: Generate SVG diagrams
+        run: |
+          for puml_file in diagrams/*.puml; do
+            java -jar plantuml.jar -tsvg "$puml_file"
+          done
 
       - name: Commit and push changes
         run: |
