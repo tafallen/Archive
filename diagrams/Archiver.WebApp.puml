@@ -1,0 +1,32 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "Archiver.WebApp" {
+    component [App.razor]
+    component [Home.razor]
+    component [Counter.razor]
+    component [Weather.razor]
+
+    class WeatherForecast {
+        + DateOnly Date
+        + int TemperatureC
+        + string? Summary
+        + int TemperatureF
+    }
+
+    [App.razor] --> [Home.razor]
+    [App.razor] --> [Counter.razor]
+    [App.razor] --> [Weather.razor]
+    [Weather.razor] ..> WeatherForecast : uses
+
+    package "Configuration" {
+        class Program {
+            + AddRazorComponents()
+            + AddInteractiveServerComponents()
+            + AddHttpClient("ApiGatewayClient")
+        }
+    }
+    Program .> [App.razor] : configures
+    Program .> [Weather.razor] : configures HttpClient for
+}
+@enduml

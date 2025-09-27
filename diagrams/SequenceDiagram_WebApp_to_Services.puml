@@ -1,0 +1,20 @@
+@startuml
+actor User
+participant "Archiver.WebApp" as WebApp
+participant "Archiver.ApiGateway" as ApiGateway
+participant "Archiver.Services" as Services
+
+User -> WebApp : Navigates to Weather page
+WebApp -> WebApp : Renders loading state
+WebApp -> ApiGateway : HTTP GET /weatherforecast (via HttpClient)
+ApiGateway -> ApiGateway : Receives request
+ApiGateway -> ApiGateway : YARP routes request
+ApiGateway -> Services : HTTP GET /weatherforecast
+Services -> Services : Processes request (WeatherForecastController)
+Services --> ApiGateway : Returns WeatherForecast data
+ApiGateway --> WebApp : Returns WeatherForecast data
+WebApp -> WebApp : Updates UI with WeatherForecast data
+WebApp --> User : Displays WeatherForecast
+
+footer "Sequence Diagram: Fetching Weather Data"
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "Archiver.Services" {
+    class WeatherForecast {
+        + DateOnly Date
+        + int TemperatureC
+        + string? Summary
+        + int TemperatureF
+    }
+
+    class WeatherForecastController {
+        - ILogger<WeatherForecastController> _logger
+        + WeatherForecastController(ILogger<WeatherForecastController> logger)
+        + IEnumerable<WeatherForecast> Get()
+    }
+
+    WeatherForecastController ..> WeatherForecast : returns
+
+    package "Configuration" {
+        class Program {
+            + AddOpenApi()
+            + UseHttpsRedirection()
+            + MapGet("/weatherforecast") : Minimal API
+        }
+    }
+    Program .> WeatherForecastController : configures
+}
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+skinparam componentStyle rectangle
+
+[Archiver.WebApp] --> [Archiver.ApiGateway] : HTTP/HTTPS requests
+[Archiver.ApiGateway] --> [Archiver.Services] : HTTP/HTTPS requests (proxied by YARP)
+
+cloud "External Clients" as Clients
+Clients --> [Archiver.WebApp] : User Interaction
+
+footer "Component Diagram of Archiver Solution"
+@enduml

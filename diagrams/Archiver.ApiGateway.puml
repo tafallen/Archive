@@ -1,0 +1,24 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "Archiver.ApiGateway" {
+    component [Program.cs]
+    component [appsettings.json]
+
+    [Program.cs] ..> [appsettings.json] : loads YARP config from
+
+    cloud "YARP Reverse Proxy" as YARP {
+        [Program.cs] --> YARP : configures
+    }
+
+    interface IReverseProxyFeature
+    YARP ..> IReverseProxyFeature : implements
+
+    note as N1
+        YARP routes requests based on
+        'ReverseProxy' section in appsettings.json
+        to backend services.
+    end note
+    YARP .. N1
+}
+@enduml
