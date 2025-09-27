@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'diagrams/**.puml'
   workflow_dispatch:
 
 jobs:
@@ -14,9 +16,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate SVG diagrams
-        uses: plantuml/plantuml-action@v2
+        uses: timonwibmer/generate-plantuml-action@v1
         with:
-          args: -tsvg diagrams/*.puml
+          path: 'diagrams/'
+          message: 'Generate PlantUML diagrams to SVG'
 
       - name: Commit and push changes
         run: |
