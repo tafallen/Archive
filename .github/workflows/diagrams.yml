@@ -38,3 +38,4 @@ jobs:
           git add diagrams/*.svg
           git commit -m "Generate PlantUML diagrams to SVG" || echo "No changes to commit"
           git push
+# Trivial change to force workflow re-evaluation
