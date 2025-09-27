@@ -1,0 +1,27 @@
+name: Generate PlantUML Diagrams
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  generate_diagrams:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate SVG diagrams
+        uses: plantuml/plantuml-action@v2
+        with:
+          args: -tsvg diagrams/*.puml
+
+      - name: Commit and push changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add diagrams/*.svg
+          git commit -m "Generate PlantUML diagrams to SVG" || echo "No changes to commit"
+          git push
