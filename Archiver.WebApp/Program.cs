@@ -1,3 +1,4 @@
+using Archiver.WebApp.Clients;
 using Archiver.WebApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddHttpClient("ApiGatewayClient", client =>
+builder.Services.AddHttpClient<ApiGatewayClient>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiGatewayUrl"] ?? throw new InvalidOperationException("ApiGatewayUrl not configured."));
 });

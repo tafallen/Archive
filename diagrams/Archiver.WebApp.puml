@@ -23,7 +23,7 @@ package "Archiver.WebApp" {
         class Program {
             + AddRazorComponents()
             + AddInteractiveServerComponents()
-            + AddHttpClient("ApiGatewayClient")
+            + AddHttpClient<ApiGatewayClient>()
         }
     }
     Program .> [App.razor] : configures
