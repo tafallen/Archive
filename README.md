@@ -86,6 +86,6 @@ To view these diagrams, you can use a PlantUML viewer or extension in your IDE.
 
 ## Configuration
 
-- **Archiver.ApiGateway**: Configured to proxy requests to `Archiver.Services` (defaulting to `https://localhost:7001`). This can be adjusted in `Archiver.ApiGateway/appsettings.json` under the `ReverseProxy` section.
-- **Archiver.WebApp**: Configured to make API calls to `Archiver.ApiGateway` (defaulting to `https://localhost:7005`). This can be adjusted in `Archiver.WebApp/appsettings.json` under the `ApiGatewayUrl` setting.
+- **Archiver.ApiGateway**: Configured to proxy requests to `Archiver.Services`. For local development, it defaults to `https://localhost:7001` (configured in `Archiver.ApiGateway/appsettings.Development.json`). In other environments, the service address should be provided via environment variables or other configuration providers, overriding the placeholder in `Archiver.ApiGateway/appsettings.json`.
+- **Archiver.WebApp**: Configured to make API calls to `Archiver.ApiGateway`. For local development, it defaults to `https://localhost:7005` (configured in `Archiver.WebApp/appsettings.Development.json`). In other environments, the API Gateway URL should be provided via environment variables or other configuration providers, overriding the placeholder in `Archiver.WebApp/appsettings.json`.
 - **Playwright Tests**: Configured to use `https://localhost:7170` as the `baseURL`. This can be adjusted in `tests/Archiver.WebApp.UITests/playwright.config.ts`.
