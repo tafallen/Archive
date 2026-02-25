@@ -21,11 +21,11 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var now = DateTime.Now;
+    var today = DateOnly.FromDateTime(DateTime.Now);
     var forecast =  Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
-            DateOnly.FromDateTime(now.AddDays(index)),
+            today.AddDays(index),
             Random.Shared.Next(-20, 55),
             summaries[Random.Shared.Next(summaries.Length)]
         ))

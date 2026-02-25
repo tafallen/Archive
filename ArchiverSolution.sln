@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archiver.ApiGateway.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archiver.Services.Tests", "Archiver.Services.Tests\Archiver.Services.Tests.csproj", "{56C01619-BA67-474A-AA70-80E783DE2DF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Archiver.Benchmarks", "Archiver.Benchmarks\Archiver.Benchmarks.csproj", "{290FC347-5531-4AB2-B5D2-11A486C09200}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{56C01619-BA67-474A-AA70-80E783DE2DF1}.Release|x64.Build.0 = Release|Any CPU
 		{56C01619-BA67-474A-AA70-80E783DE2DF1}.Release|x86.ActiveCfg = Release|Any CPU
 		{56C01619-BA67-474A-AA70-80E783DE2DF1}.Release|x86.Build.0 = Release|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Debug|x64.Build.0 = Debug|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Debug|x86.Build.0 = Debug|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Release|Any CPU.Build.0 = Release|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Release|x64.ActiveCfg = Release|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Release|x64.Build.0 = Release|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Release|x86.ActiveCfg = Release|Any CPU
+		{290FC347-5531-4AB2-B5D2-11A486C09200}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

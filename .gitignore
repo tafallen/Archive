@@ -69,3 +69,6 @@ node_modules/
 # Misc
 *.DS_Store
 Thumbs.db
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
