@@ -19,16 +19,14 @@ public class WeatherForecastBenchmark
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-    [Benchmark]
-    public WeatherForecast[] Baseline()
+    [Benchmark(Baseline = true)]
+    public WeatherForecast[] TaskDescriptionUnoptimized()
     {
-        // Matches the logic before optimization in Archiver.Services/Program.cs
-        // Note: The original code had var now = DateTime.Now; outside loop.
-        var now = DateTime.Now;
+        // This matches the "Current Code" description in the task
         var forecast = Enumerable.Range(1, 5).Select(index =>
             new WeatherForecast
             (
-                DateOnly.FromDateTime(now.AddDays(index)),
+                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
                 Random.Shared.Next(-20, 55),
                 summaries[Random.Shared.Next(summaries.Length)]
             ))
@@ -37,9 +35,9 @@ public class WeatherForecastBenchmark
     }
 
     [Benchmark]
-    public WeatherForecast[] Optimized()
+    public WeatherForecast[] CurrentCode()
     {
-        // Matches the optimized logic
+        // Matches the current code in Archiver.Services/Program.cs
         var today = DateOnly.FromDateTime(DateTime.Now);
         var forecast = Enumerable.Range(1, 5).Select(index =>
             new WeatherForecast
@@ -49,6 +47,24 @@ public class WeatherForecastBenchmark
                 summaries[Random.Shared.Next(summaries.Length)]
             ))
             .ToArray();
+        return forecast;
+    }
+
+    [Benchmark]
+    public WeatherForecast[] NoLinq()
+    {
+        // Proposed optimization removing LINQ
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var forecast = new WeatherForecast[5];
+        for (int i = 0; i < 5; i++)
+        {
+            forecast[i] = new WeatherForecast
+            (
+                today.AddDays(i + 1),
+                Random.Shared.Next(-20, 55),
+                summaries[Random.Shared.Next(summaries.Length)]
+            );
+        }
         return forecast;
     }
 }
