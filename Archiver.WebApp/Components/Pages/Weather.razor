@@ -39,7 +39,7 @@ else
 @code {
     private WeatherForecast[]? forecasts;
 
-    protected override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         var startDate = DateOnly.FromDateTime(DateTime.Now);
         var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
@@ -49,8 +49,6 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
-
-        return Task.CompletedTask;
     }
 
     private class WeatherForecast
