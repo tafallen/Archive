@@ -22,14 +22,16 @@ var summaries = new[]
 app.MapGet("/weatherforecast", () =>
 {
     var today = DateOnly.FromDateTime(DateTime.Now);
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
+    var forecast = new WeatherForecast[5];
+    for (int i = 0; i < 5; i++)
+    {
+        forecast[i] = new WeatherForecast
         (
-            today.AddDays(index),
+            today.AddDays(i + 1),
             Random.Shared.Next(-20, 55),
             summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
+        );
+    }
     return forecast;
 })
 .WithName("GetWeatherForecast");
