@@ -66,6 +66,10 @@ packages/
 # Node.js
 node_modules/
 
+# Playwright
+playwright-report/
+test-results/
+
 # Misc
 *.DS_Store
 Thumbs.db
