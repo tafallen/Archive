@@ -1,4 +1,5 @@
 using Archiver.Services;
+using Archiver.Shared;
 using Xunit;
 
 namespace Archiver.Services.Tests;
