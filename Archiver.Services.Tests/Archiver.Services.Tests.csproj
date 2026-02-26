@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Archiver.Services\Archiver.Services.csproj" />
+    <ProjectReference Include="..\Archiver.Shared\Archiver.Shared.csproj" />
   </ItemGroup>
 
 </Project>

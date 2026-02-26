@@ -56,9 +56,9 @@ test.describe('Weather', () => {
       const tempFText = await cells.nth(2).textContent();
       const tempF = parseInt(tempFText!, 10);
 
-      // Verify conversion: 32 + (int)(TemperatureC / 0.5556)
+      // Verify conversion: 32 + (int)(TemperatureC * 1.8)
       // Note: Math.trunc behaves like C# (int) cast for positive/negative numbers (truncates towards zero)
-      const expectedF = 32 + Math.trunc(tempC / 0.5556);
+      const expectedF = 32 + Math.trunc(tempC * 1.8);
       expect(tempF).toBe(expectedF);
 
       // Summary Validation
