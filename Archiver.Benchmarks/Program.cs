@@ -67,9 +67,32 @@ public class WeatherForecastBenchmark
         }
         return forecast;
     }
+
+    [Benchmark]
+    public WeatherForecastStruct[] StructOptimization()
+    {
+        // Proposed optimization using struct
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var forecast = new WeatherForecastStruct[5];
+        for (int i = 0; i < 5; i++)
+        {
+            forecast[i] = new WeatherForecastStruct
+            (
+                today.AddDays(i + 1),
+                Random.Shared.Next(-20, 55),
+                summaries[Random.Shared.Next(summaries.Length)]
+            );
+        }
+        return forecast;
+    }
 }
 
 public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
+
+public readonly record struct WeatherForecastStruct(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
