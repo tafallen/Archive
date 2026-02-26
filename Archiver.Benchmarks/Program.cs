@@ -3,12 +3,13 @@ using BenchmarkDotNet.Running;
 using System;
 using System.Linq;
 using Archiver.Shared;
+using Archiver.Benchmarks;
 
 public class Program
 {
     public static void Main(string[] args)
     {
-        BenchmarkRunner.Run<WeatherForecastBenchmark>();
+        BenchmarkRunner.Run<WeatherForecastOptimizations>();
     }
 }
 
