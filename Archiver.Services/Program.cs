@@ -37,6 +37,20 @@ app.MapGet("/weatherforecast", () =>
     }
     return forecast;
 })
-.WithName("GetWeatherForecast");
+.WithName("GetWeatherForecast")
+.AddEndpointFilter(async (invocationContext, next) =>
+{
+    var context = invocationContext.HttpContext;
+    var config = context.RequestServices.GetRequiredService<IConfiguration>();
+    var apiKey = config["Authentication:ApiKey"];
+
+    if (!context.Request.Headers.TryGetValue("X-Internal-Key", out var extractedApiKey) ||
+        !string.Equals(extractedApiKey, apiKey, StringComparison.Ordinal))
+    {
+        return Results.Unauthorized();
+    }
+
+    return await next(invocationContext);
+});
 
 app.Run();
