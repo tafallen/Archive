@@ -2,6 +2,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using System;
 using System.Linq;
+using Archiver.Shared;
 
 public class Program
 {
@@ -20,11 +21,11 @@ public class WeatherForecastBenchmark
     };
 
     [Benchmark(Baseline = true)]
-    public WeatherForecast[] TaskDescriptionUnoptimized()
+    public WeatherForecastClass[] TaskDescriptionUnoptimized()
     {
         // This matches the "Current Code" description in the task
         var forecast = Enumerable.Range(1, 5).Select(index =>
-            new WeatherForecast
+            new WeatherForecastClass
             (
                 DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
                 Random.Shared.Next(-20, 55),
@@ -69,14 +70,14 @@ public class WeatherForecastBenchmark
     }
 
     [Benchmark]
-    public WeatherForecastStruct[] StructOptimization()
+    public WeatherForecast[] StructOptimization()
     {
         // Proposed optimization using struct
         var today = DateOnly.FromDateTime(DateTime.Now);
-        var forecast = new WeatherForecastStruct[5];
+        var forecast = new WeatherForecast[5];
         for (int i = 0; i < 5; i++)
         {
-            forecast[i] = new WeatherForecastStruct
+            forecast[i] = new WeatherForecast
             (
                 today.AddDays(i + 1),
                 Random.Shared.Next(-20, 55),
@@ -87,15 +88,7 @@ public class WeatherForecastBenchmark
     }
 }
 
-public record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    private const int FahrenheitFreezingPoint = 32;
-    private const double CelsiusToFahrenheitMultiplier = 1.8;
-
-    public int TemperatureF => FahrenheitFreezingPoint + (int)(TemperatureC * CelsiusToFahrenheitMultiplier);
-}
-
-public readonly record struct WeatherForecastStruct(DateOnly Date, int TemperatureC, string? Summary)
+public record WeatherForecastClass(DateOnly Date, int TemperatureC, string? Summary)
 {
     private const int FahrenheitFreezingPoint = 32;
     private const double CelsiusToFahrenheitMultiplier = 1.8;

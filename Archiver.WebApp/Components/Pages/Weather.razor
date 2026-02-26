@@ -1,5 +1,6 @@
 @page "/weather"
 @attribute [StreamRendering]
+@using Archiver.Shared
 
 <PageTitle>Weather</PageTitle>
 
@@ -52,16 +53,5 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
-    }
-
-    private class WeatherForecast
-    {
-        private const int FahrenheitFreezingPoint = 32;
-        private const double CelsiusToFahrenheitMultiplier = 1.8;
-
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => FahrenheitFreezingPoint + (int)(TemperatureC * CelsiusToFahrenheitMultiplier);
     }
 }

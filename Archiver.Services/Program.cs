@@ -1,3 +1,5 @@
+using Archiver.Shared;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -37,11 +39,3 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast");
 
 app.Run();
-
-public readonly record struct WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    private const int FahrenheitFreezingPoint = 32;
-    private const double CelsiusToFahrenheitMultiplier = 1.8;
-
-    public int TemperatureF => FahrenheitFreezingPoint + (int)(TemperatureC * CelsiusToFahrenheitMultiplier);
-}
