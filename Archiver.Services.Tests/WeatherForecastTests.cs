@@ -15,6 +15,9 @@ public class WeatherForecastTests
     [InlineData(37, 98)]      // Body temperature: 32 + 66.6 -> 98 (truncation)
     [InlineData(-10, 14)]     // Cold day: 32 - 18 -> 14
     [InlineData(26, 78)]      // Truncation check: 26 * 1.8 = 46.8 -> 32 + 46 = 78
+    [InlineData(10, 50)]      // Precision check: 10 * 1.8 = 18.0 -> 32 + 18 = 50. (10 / 0.5556 would be ~49)
+    [InlineData(-100, -148)]  // Cold boundary: 32 - 180 = -148
+    [InlineData(50, 122)]     // Hot boundary: 32 + 90 = 122
     public void TemperatureF_CalculatesCorrectly(int tempC, int expectedTempF)
     {
         // Arrange
