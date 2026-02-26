@@ -90,5 +90,8 @@ public class WeatherForecastBenchmark
 
 public record WeatherForecastClass(DateOnly Date, int TemperatureC, string? Summary)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    private const int FahrenheitFreezingPoint = 32;
+    private const double CelsiusToFahrenheitMultiplier = 1.8;
+
+    public int TemperatureF => FahrenheitFreezingPoint + (int)(TemperatureC * CelsiusToFahrenheitMultiplier);
 }
