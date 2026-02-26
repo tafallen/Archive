@@ -22,7 +22,9 @@ test.describe('Weather', () => {
     await expect(headers).toHaveCount(4);
     await expect(headers.nth(0)).toHaveText('Date');
     await expect(headers.nth(1)).toHaveText('Temp. (C)');
+    await expect(headers.nth(1)).toHaveAttribute('aria-label', 'Temperature in Celsius');
     await expect(headers.nth(2)).toHaveText('Temp. (F)');
+    await expect(headers.nth(2)).toHaveAttribute('aria-label', 'Temperature in Fahrenheit');
     await expect(headers.nth(3)).toHaveText('Summary');
 
     // Verify table has 5 rows of data
