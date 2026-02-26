@@ -23,6 +23,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
+    // Optimized: DateTime.Now captured outside loop
     var today = DateOnly.FromDateTime(DateTime.Now);
     var forecast = new WeatherForecast[5];
     for (int i = 0; i < 5; i++)
