@@ -57,11 +57,11 @@ else
     private class WeatherForecast
     {
         private const int FahrenheitFreezingPoint = 32;
-        private const double CelsiusToFahrenheitDivisor = 0.5556;
+        private const double CelsiusToFahrenheitMultiplier = 1.8;
 
         public DateOnly Date { get; set; }
         public int TemperatureC { get; set; }
         public string? Summary { get; set; }
-        public int TemperatureF => FahrenheitFreezingPoint + (int)(TemperatureC / CelsiusToFahrenheitDivisor);
+        public int TemperatureF => FahrenheitFreezingPoint + (int)(TemperatureC * CelsiusToFahrenheitMultiplier);
     }
 }
