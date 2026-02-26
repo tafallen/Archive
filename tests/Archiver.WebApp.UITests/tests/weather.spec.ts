@@ -2,14 +2,20 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Weather', () => {
   test('should load weather data and display table', async ({ page }) => {
-    // Navigate to the weather page
-    await page.goto('/weather');
+    // Navigate to the weather page, but don't wait for full load as we want to catch the streaming state
+    await page.goto('/weather', { waitUntil: 'commit' });
 
     // Verify page title
     await expect(page).toHaveTitle('Weather');
 
+    // Verify loading state
+    await expect(page.locator('text=Loading...')).toBeVisible();
+
     // Wait for the table to appear
     await expect(page.locator('table')).toBeVisible();
+
+    // Verify loading message is gone
+    await expect(page.locator('text=Loading...')).not.toBeVisible();
 
     // Verify table headers
     const headers = page.locator('table thead tr th');
