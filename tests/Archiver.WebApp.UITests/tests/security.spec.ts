@@ -23,4 +23,7 @@ test('should have security headers', async ({ page }) => {
 
   // Check for Permissions-Policy
   expect(headers['permissions-policy']).toBeDefined();
+
+  // Check for X-Permitted-Cross-Domain-Policies
+  expect(headers['x-permitted-cross-domain-policies']).toBe('none');
 });
