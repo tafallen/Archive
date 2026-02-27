@@ -27,13 +27,13 @@ app.MapGet("/weatherforecast", () =>
     // Using DateOnly.DayNumber to avoid repeated DateOnly struct creation and validation overhead
     var today = DateOnly.FromDateTime(DateTime.Now);
     var startDayNumber = today.DayNumber;
-    var forecast = new WeatherForecast[5];
-    for (int i = 0; i < 5; i++)
+    var forecast = new WeatherForecast[WeatherForecast.ForecastDays];
+    for (int i = 0; i < WeatherForecast.ForecastDays; i++)
     {
         forecast[i] = new WeatherForecast
         (
             DateOnly.FromDayNumber(startDayNumber + i + 1),
-            Random.Shared.Next(-20, 55),
+            Random.Shared.Next(WeatherForecast.MinTemperatureC, WeatherForecast.MaxTemperatureC),
             summaries[Random.Shared.Next(summaries.Length)]
         );
     }
