@@ -1,8 +1,13 @@
+using Archiver.Services.Auth;
 using Archiver.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddAuthentication("ApiKey")
+    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
+builder.Services.AddAuthorization();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -15,6 +20,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 var summaries = new[]
 {
@@ -40,19 +48,6 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast")
-.AddEndpointFilter(async (invocationContext, next) =>
-{
-    var context = invocationContext.HttpContext;
-    var config = context.RequestServices.GetRequiredService<IConfiguration>();
-    var apiKey = config["Authentication:ApiKey"];
-
-    if (!context.Request.Headers.TryGetValue("X-Internal-Key", out var extractedApiKey) ||
-        !string.Equals(extractedApiKey, apiKey, StringComparison.Ordinal))
-    {
-        return Results.Unauthorized();
-    }
-
-    return await next(invocationContext);
-});
+.RequireAuthorization();
 
 app.Run();
