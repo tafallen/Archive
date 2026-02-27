@@ -24,13 +24,15 @@ var summaries = new[]
 app.MapGet("/weatherforecast", () =>
 {
     // DateTime.Now captured outside loop for performance (verified in benchmarks)
+    // Using DateOnly.DayNumber to avoid repeated DateOnly struct creation and validation overhead
     var today = DateOnly.FromDateTime(DateTime.Now);
+    var startDayNumber = today.DayNumber;
     var forecast = new WeatherForecast[5];
     for (int i = 0; i < 5; i++)
     {
         forecast[i] = new WeatherForecast
         (
-            today.AddDays(i + 1),
+            DateOnly.FromDayNumber(startDayNumber + i + 1),
             Random.Shared.Next(-20, 55),
             summaries[Random.Shared.Next(summaries.Length)]
         );
