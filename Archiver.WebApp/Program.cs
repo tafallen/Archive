@@ -6,6 +6,13 @@ using Archiver.WebApp.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365);
+    options.IncludeSubDomains = true;
+    options.Preload = true;
+});
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

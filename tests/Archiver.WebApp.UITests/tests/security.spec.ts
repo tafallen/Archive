@@ -26,4 +26,7 @@ test('should have security headers', async ({ page }) => {
 
   // Check for X-Permitted-Cross-Domain-Policies
   expect(headers['x-permitted-cross-domain-policies']).toBe('none');
+
+  // Check for X-XSS-Protection
+  expect(headers['x-xss-protection']).toBe('1; mode=block');
 });
