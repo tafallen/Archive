@@ -1,3 +1,4 @@
+using Archiver.WebApp.Clients;
 using Archiver.WebApp.Components;
 using Archiver.WebApp.Configuration;
 using Archiver.WebApp.Middleware;
@@ -7,6 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient<WeatherApiClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiGatewayUrl"] ?? "https://localhost:7005");
+});
 
 var app = builder.Build();
 
