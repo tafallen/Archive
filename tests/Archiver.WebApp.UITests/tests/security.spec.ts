@@ -18,8 +18,11 @@ test('should have security headers', async ({ page }) => {
   expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
 
   // Check for Content-Security-Policy
-  // Just checking existence for now, as the value might be complex
-  expect(headers['content-security-policy']).toBeDefined();
+  const csp = headers['content-security-policy'];
+  expect(csp).toBeDefined();
+  expect(csp).toContain("default-src 'self'");
+  // Ensure we are restricting frame ancestors to prevent clickjacking
+  expect(csp).toContain("frame-ancestors 'self'");
 
   // Check for Permissions-Policy
   expect(headers['permissions-policy']).toBeDefined();
@@ -27,6 +30,12 @@ test('should have security headers', async ({ page }) => {
   // Check for X-Permitted-Cross-Domain-Policies
   expect(headers['x-permitted-cross-domain-policies']).toBe('none');
 
-  // Check for X-XSS-Protection
-  expect(headers['x-xss-protection']).toBe('1; mode=block');
+  // Check for Cache-Control
+  expect(headers['cache-control']).toBe('no-store, no-cache, max-age=0, must-revalidate');
+
+  // Check for Pragma
+  expect(headers['pragma']).toBe('no-cache');
+
+  // X-XSS-Protection is deprecated and removed
+  expect(headers['x-xss-protection']).toBeUndefined();
 });
