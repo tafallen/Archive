@@ -18,6 +18,8 @@ public class WeatherForecastTests
     [InlineData(10, 50)]      // Precision check: 10 * 1.8 = 18.0 -> 32 + 18 = 50. (10 / 0.5556 would be ~49)
     [InlineData(-100, -148)]  // Cold boundary: 32 - 180 = -148
     [InlineData(50, 122)]     // Hot boundary: 32 + 90 = 122
+    [InlineData(WeatherForecast.MinTemperatureC, -4)] // Minimum temperature C limit boundary: 32 - 36 = -4
+    [InlineData(WeatherForecast.MaxTemperatureC, 131)] // Maximum temperature C limit boundary: 32 + 99 = 131
     public void TemperatureF_CalculatesCorrectly(int tempC, int expectedTempF)
     {
         // Arrange
