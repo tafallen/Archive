@@ -1,0 +1,4 @@
+When enabling Response Compression for Blazor Server applications:
+- You must add `application/octet-stream` to the `MimeTypes` collection in `builder.Services.AddResponseCompression` to compress SignalR traffic.
+- You must place `app.UseResponseCompression()` as early as possible in the middleware pipeline (usually right after `app.Build()`).
+- Crucially, you must wrap `app.UseResponseCompression()` in `if (!app.Environment.IsDevelopment())` to disable it during local development. If response compression is active in development, it breaks .NET Hot Reload functionality for Blazor apps.
