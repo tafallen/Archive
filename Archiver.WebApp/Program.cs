@@ -2,6 +2,7 @@ using Archiver.WebApp.Clients;
 using Archiver.WebApp.Components;
 using Archiver.WebApp.Configuration;
 using Archiver.WebApp.Middleware;
+using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,15 @@ builder.Services.AddHsts(options =>
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
 
 builder.Services.AddHttpClient<WeatherApiClient>(client =>
 {
@@ -34,6 +44,8 @@ if (!app.Environment.IsDevelopment())
 app.UseMiddleware<SecurityHeadersMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseResponseCompression();
 
 app.UseAntiforgery();
 
