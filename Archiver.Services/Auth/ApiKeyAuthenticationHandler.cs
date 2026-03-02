@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,6 +11,12 @@ namespace Archiver.Services.Auth;
 public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
 {
     private readonly IConfiguration _configuration;
+
+    // Cache the claims array as it's static and doesn't change
+    private static readonly Claim[] CachedClaims = { new(ClaimTypes.Name, "ApiKeyUser") };
+
+    // Cache the AuthenticationTicket per scheme name to support multiple schemes correctly
+    private static readonly ConcurrentDictionary<string, AuthenticationTicket> CachedTickets = new();
 
     public ApiKeyAuthenticationHandler(
         IOptionsMonitor<ApiKeyAuthenticationOptions> options,
@@ -51,10 +58,15 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
             return AuthenticateResult.Fail("Invalid API Key");
         }
 
-        var claims = new[] { new Claim(ClaimTypes.Name, "ApiKeyUser") };
-        var identity = new ClaimsIdentity(claims, Scheme.Name);
-        var principal = new ClaimsPrincipal(identity);
-        var ticket = new AuthenticationTicket(principal, Scheme.Name);
+        // Get or create the cached ticket for this scheme
+        var ticket = CachedTickets.GetOrAdd(Scheme.Name, schemeName =>
+        {
+            // Identity and Principal are technically mutable, but in this specific API key
+            // usage context, they are treated as static representations of the service user.
+            var identity = new ClaimsIdentity(CachedClaims, schemeName);
+            var principal = new ClaimsPrincipal(identity);
+            return new AuthenticationTicket(principal, schemeName);
+        });
 
         return AuthenticateResult.Success(ticket);
     }
