@@ -9,7 +9,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        BenchmarkRunner.Run<WeatherForecastOptimizations>();
+        BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
     }
 }
 
@@ -22,21 +22,6 @@ public class WeatherForecastBenchmark
     };
 
     [Benchmark(Baseline = true)]
-    public WeatherForecastClass[] TaskDescriptionUnoptimized()
-    {
-        // This matches the "Current Code" description in the task
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-            new WeatherForecastClass
-            (
-                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
-            ))
-            .ToArray();
-        return forecast;
-    }
-
-    [Benchmark]
     public WeatherForecast[] CurrentCode()
     {
         // Matches the current code in Archiver.Services/Program.cs
@@ -87,12 +72,4 @@ public class WeatherForecastBenchmark
         }
         return forecast;
     }
-}
-
-public record WeatherForecastClass(DateOnly Date, int TemperatureC, string? Summary)
-{
-    private const int FahrenheitFreezingPoint = 32;
-    private const double CelsiusToFahrenheitMultiplier = 1.8;
-
-    public int TemperatureF => FahrenheitFreezingPoint + (int)(TemperatureC * CelsiusToFahrenheitMultiplier);
 }
