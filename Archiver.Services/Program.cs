@@ -63,3 +63,5 @@ app.MapGet("/weatherforecast", () =>
 .RequireAuthorization();
 
 app.Run();
+
+public partial class Program { }
