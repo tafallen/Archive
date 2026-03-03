@@ -18,6 +18,10 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
     // Cache the AuthenticationTicket per scheme name to support multiple schemes correctly
     private static readonly ConcurrentDictionary<string, AuthenticationTicket> CachedTickets = new();
 
+    // Cache the expected API key and its UTF-8 representation
+    private static string? _cachedApiKey;
+    private static byte[]? _cachedExpectedKeyBytes;
+
     public ApiKeyAuthenticationHandler(
         IOptionsMonitor<ApiKeyAuthenticationOptions> options,
         ILoggerFactory logger,
@@ -49,24 +53,54 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
             return AuthenticateResult.Fail("API Key not configured");
         }
 
-        // Constant-time comparison to prevent timing attacks
-        var providedKeyBytes = Encoding.UTF8.GetBytes(extractedApiKey.ToString());
-        var expectedKeyBytes = Encoding.UTF8.GetBytes(apiKey);
+        // Cache the expected key bytes to avoid allocating a byte array per request.
+        // Copy to locals to avoid thread-safety issues when caching logic updates.
+        var cachedKey = _cachedApiKey;
+        var cachedBytes = _cachedExpectedKeyBytes;
 
-        if (!CryptographicOperations.FixedTimeEquals(providedKeyBytes, expectedKeyBytes))
+        if (cachedKey != apiKey || cachedBytes == null)
+        {
+            cachedKey = apiKey;
+            cachedBytes = Encoding.UTF8.GetBytes(apiKey);
+            _cachedExpectedKeyBytes = cachedBytes; // Order matters: set bytes first
+            _cachedApiKey = cachedKey;
+        }
+
+        var extractedStr = extractedApiKey.ToString();
+        int maxBytes = Encoding.UTF8.GetMaxByteCount(extractedStr.Length);
+        bool isValid = false;
+
+        // Use stackalloc for typical small keys to avoid heap allocation
+        if (maxBytes <= 256)
+        {
+            Span<byte> providedKeySpan = stackalloc byte[maxBytes];
+            int length = Encoding.UTF8.GetBytes(extractedStr, providedKeySpan);
+            // Constant-time comparison to prevent timing attacks
+            isValid = CryptographicOperations.FixedTimeEquals(providedKeySpan[..length], cachedBytes);
+        }
+        else
+        {
+            var providedKeyBytes = Encoding.UTF8.GetBytes(extractedStr);
+            isValid = CryptographicOperations.FixedTimeEquals(providedKeyBytes, cachedBytes);
+        }
+
+        if (!isValid)
         {
             return AuthenticateResult.Fail("Invalid API Key");
         }
 
-        // Get or create the cached ticket for this scheme
-        var ticket = CachedTickets.GetOrAdd(Scheme.Name, schemeName =>
+        // Prevent redundant allocation of Claims array and AuthenticationTicket per request.
+        // Fast path: use TryGetValue to completely avoid the delegate allocation overhead of GetOrAdd.
+        if (!CachedTickets.TryGetValue(Scheme.Name, out var ticket))
         {
             // Identity and Principal are technically mutable, but in this specific API key
             // usage context, they are treated as static representations of the service user.
-            var identity = new ClaimsIdentity(CachedClaims, schemeName);
+            var identity = new ClaimsIdentity(CachedClaims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
-            return new AuthenticationTicket(principal, schemeName);
-        });
+            ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+            CachedTickets.TryAdd(Scheme.Name, ticket);
+        }
 
         return AuthenticateResult.Success(ticket);
     }
