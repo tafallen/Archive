@@ -15,8 +15,8 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
     // Cache the claims array as it's static and doesn't change
     private static readonly Claim[] CachedClaims = { new(ClaimTypes.Name, "ApiKeyUser") };
 
-    // Cache the AuthenticationTicket per scheme name to support multiple schemes correctly
-    private static readonly ConcurrentDictionary<string, AuthenticationTicket> CachedTickets = new();
+    // Cache the AuthenticateResult per scheme name to support multiple schemes correctly
+    private static readonly ConcurrentDictionary<string, AuthenticateResult> CachedResults = new();
 
     // Cache the expected API key and its UTF-8 representation
     private static string? _cachedApiKey;
@@ -89,19 +89,20 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
             return AuthenticateResult.Fail("Invalid API Key");
         }
 
-        // Prevent redundant allocation of Claims array and AuthenticationTicket per request.
+        // Prevent redundant allocation of Claims array, AuthenticationTicket, and AuthenticateResult per request.
         // Fast path: use TryGetValue to completely avoid the delegate allocation overhead of GetOrAdd.
-        if (!CachedTickets.TryGetValue(Scheme.Name, out var ticket))
+        if (!CachedResults.TryGetValue(Scheme.Name, out var result))
         {
             // Identity and Principal are technically mutable, but in this specific API key
             // usage context, they are treated as static representations of the service user.
             var identity = new ClaimsIdentity(CachedClaims, Scheme.Name);
             var principal = new ClaimsPrincipal(identity);
-            ticket = new AuthenticationTicket(principal, Scheme.Name);
+            var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
-            CachedTickets.TryAdd(Scheme.Name, ticket);
+            result = AuthenticateResult.Success(ticket);
+            CachedResults.TryAdd(Scheme.Name, result);
         }
 
-        return AuthenticateResult.Success(ticket);
+        return result;
     }
 }
