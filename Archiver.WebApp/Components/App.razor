@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -15,7 +18,10 @@
 
 <body>
     <Routes />
-    <script src="_framework/blazor.web.js"></script>
+    @{
+        var nonce = HttpContextAccessor.HttpContext?.Items["csp-nonce"]?.ToString();
+    }
+    <script src="_framework/blazor.web.js" nonce="@nonce"></script>
 </body>
 
 </html>

@@ -14,6 +14,7 @@ builder.Services.AddHsts(options =>
     options.Preload = true;
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
