@@ -5,7 +5,7 @@ using System;
 
 namespace Archiver.WebApp.Middleware;
 
-public class SecurityHeadersMiddleware
+public class SecurityHeadersMiddleware(RequestDelegate next)
 {
     private const int NonceLength = 32;
 
@@ -38,6 +38,6 @@ public class SecurityHeadersMiddleware
             context.Response.Headers.Append("Pragma", "no-cache");
         }
 
-        await _next(context);
+        await next(context);
     }
 }
