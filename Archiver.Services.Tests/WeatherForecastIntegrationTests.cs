@@ -70,4 +70,30 @@ public class WeatherForecastIntegrationTests : IClassFixture<WebApplicationFacto
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Get_WeatherForecast_UnconfiguredApiKey_ReturnsUnauthorized()
+    {
+        // Arrange
+        // Create a custom factory with no API key configured to test the "API Key not configured" path
+        var unconfiguredFactory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Authentication:ApiKey"] = string.Empty
+                });
+            });
+        });
+
+        var client = unconfiguredFactory.CreateClient();
+        client.DefaultRequestHeaders.Add(AuthConstants.ApiKeyHeaderName, "ANY_KEY_BECAUSE_UNCONFIGURED");
+
+        // Act
+        var response = await client.GetAsync("/weatherforecast");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
 }
