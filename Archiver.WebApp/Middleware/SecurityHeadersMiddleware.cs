@@ -9,16 +9,11 @@ public class SecurityHeadersMiddleware(RequestDelegate next)
 {
     private const int NonceLength = 32;
 
-    private readonly RequestDelegate _next;
-
-    public SecurityHeadersMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
-        var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(NonceLength));
+        Span<byte> bytes = stackalloc byte[NonceLength];
+        RandomNumberGenerator.Fill(bytes);
+        var nonce = Convert.ToBase64String(bytes);
         context.Items["csp-nonce"] = nonce;
 
         context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
