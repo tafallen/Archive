@@ -11,7 +11,9 @@ public class SecurityHeadersMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(NonceLength));
+        Span<byte> bytes = stackalloc byte[NonceLength];
+        RandomNumberGenerator.Fill(bytes);
+        var nonce = Convert.ToBase64String(bytes);
         context.Items["csp-nonce"] = nonce;
 
         context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
