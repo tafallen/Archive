@@ -10,8 +10,7 @@ builder.Services.AddResponseCompression(options =>
     options.EnableForHttps = true;
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();
-    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-        new[] { "application/json" });
+    options.MimeTypes = ["text/plain", "text/css", "application/javascript", "text/javascript", "text/html", "application/xml", "text/xml", "application/json", "text/json", "application/wasm"];
 });
 
 builder.Services.AddAuthentication("ApiKey")
