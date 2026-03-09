@@ -13,8 +13,8 @@ builder.Services.AddResponseCompression(options =>
     options.MimeTypes = ["text/plain", "text/css", "application/javascript", "text/javascript", "text/html", "application/xml", "text/xml", "application/json", "text/json", "application/wasm"];
 });
 
-builder.Services.AddAuthentication("ApiKey")
-    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>("ApiKey", null);
+builder.Services.AddAuthentication(ApiKeyAuthenticationOptions.DefaultScheme)
+    .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationOptions.DefaultScheme, null);
 builder.Services.AddAuthorization();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
