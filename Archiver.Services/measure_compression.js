@@ -8,7 +8,7 @@ function makeRequest(path, headers = {}) {
       path: path,
       method: 'GET',
       headers: {
-        'X-Internal-Key': 'REPLACE_ME_WITH_REAL_SECRET',
+        'X-Internal-Key': process.env.INTERNAL_API_KEY || '',
         ...headers
       }
     }, (res) => {
