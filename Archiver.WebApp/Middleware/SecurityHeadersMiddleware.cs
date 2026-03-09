@@ -7,6 +7,8 @@ namespace Archiver.WebApp.Middleware;
 
 public class SecurityHeadersMiddleware
 {
+    private const int NonceLength = 32;
+
     private readonly RequestDelegate _next;
 
     public SecurityHeadersMiddleware(RequestDelegate next)
@@ -16,7 +18,7 @@ public class SecurityHeadersMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(NonceLength));
         context.Items["csp-nonce"] = nonce;
 
         context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
