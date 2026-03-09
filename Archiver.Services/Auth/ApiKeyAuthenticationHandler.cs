@@ -8,10 +8,13 @@ using Microsoft.Extensions.Options;
 
 namespace Archiver.Services.Auth;
 
-public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
+public class ApiKeyAuthenticationHandler(
+    IOptionsMonitor<ApiKeyAuthenticationOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    IConfiguration configuration)
+    : AuthenticationHandler<ApiKeyAuthenticationOptions>(options, logger, encoder)
 {
-    private readonly IConfiguration _configuration;
-
     // Cache the claims array as it's static and doesn't change
     private static readonly Claim[] CachedClaims = { new(ClaimTypes.Name, "ApiKeyUser") };
 
@@ -22,16 +25,6 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
     private static string? _cachedApiKey;
     private static byte[]? _cachedExpectedKeyBytes;
 
-    public ApiKeyAuthenticationHandler(
-        IOptionsMonitor<ApiKeyAuthenticationOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
-        IConfiguration configuration)
-        : base(options, logger, encoder)
-    {
-        _configuration = configuration;
-    }
-
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         // Allow unauthenticated requests for metadata endpoints like OpenAPI
@@ -41,12 +34,12 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
             return AuthenticateResult.NoResult();
         }
 
-        if (!Request.Headers.TryGetValue("X-Internal-Key", out var extractedApiKey))
+        if (!Request.Headers.TryGetValue(AuthConstants.ApiKeyHeaderName, out var extractedApiKey))
         {
             return AuthenticateResult.Fail("Missing API Key");
         }
 
-        var apiKey = _configuration["Authentication:ApiKey"];
+        var apiKey = configuration["Authentication:ApiKey"];
 
         if (string.IsNullOrEmpty(apiKey))
         {

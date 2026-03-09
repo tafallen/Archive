@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Archiver.Services.Auth;
 using Archiver.Shared;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -44,7 +45,7 @@ public class WeatherForecastIntegrationTests : IClassFixture<WebApplicationFacto
     {
         // Arrange
         var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-Internal-Key", TestApiKey);
+        client.DefaultRequestHeaders.Add(AuthConstants.ApiKeyHeaderName, TestApiKey);
 
         // Act
         var response = await client.GetAsync("/weatherforecast");
@@ -61,7 +62,7 @@ public class WeatherForecastIntegrationTests : IClassFixture<WebApplicationFacto
     {
         // Arrange
         var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Add("X-Internal-Key", "WRONG_KEY");
+        client.DefaultRequestHeaders.Add(AuthConstants.ApiKeyHeaderName, "WRONG_KEY");
 
         // Act
         var response = await client.GetAsync("/weatherforecast");
