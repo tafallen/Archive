@@ -5,15 +5,8 @@ using System;
 
 namespace Archiver.WebApp.Middleware;
 
-public class SecurityHeadersMiddleware
+public class SecurityHeadersMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public SecurityHeadersMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
@@ -36,6 +29,6 @@ public class SecurityHeadersMiddleware
             context.Response.Headers.Append("Pragma", "no-cache");
         }
 
-        await _next(context);
+        await next(context);
     }
 }
