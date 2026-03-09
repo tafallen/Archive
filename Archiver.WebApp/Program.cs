@@ -23,7 +23,7 @@ builder.Services.AddResponseCompression(opts =>
     opts.EnableForHttps = true;
     opts.Providers.Add<BrotliCompressionProvider>();
     opts.Providers.Add<GzipCompressionProvider>();
-    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+    opts.MimeTypes = ["text/plain", "text/css", "application/javascript", "text/javascript", "text/html", "application/xml", "text/xml", "application/json", "text/json", "application/wasm", "application/octet-stream"];
 });
 
 builder.Services.AddHttpClient<WeatherApiClient>(client =>
