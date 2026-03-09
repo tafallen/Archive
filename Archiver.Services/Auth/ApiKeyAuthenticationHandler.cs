@@ -41,7 +41,7 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
             return AuthenticateResult.NoResult();
         }
 
-        if (!Request.Headers.TryGetValue("X-Internal-Key", out var extractedApiKey))
+        if (!Request.Headers.TryGetValue(AuthConstants.ApiKeyHeaderName, out var extractedApiKey))
         {
             return AuthenticateResult.Fail("Missing API Key");
         }
