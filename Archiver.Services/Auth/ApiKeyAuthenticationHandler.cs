@@ -21,27 +21,48 @@ public class ApiKeyAuthenticationHandler(
     private static string? _cachedApiKey;
     private static byte[]? _cachedExpectedKeyBytes;
 
-    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        // Allow unauthenticated requests for metadata endpoints like OpenAPI
-        var endpoint = Context.GetEndpoint();
-        if (endpoint?.Metadata?.GetMetadata<Microsoft.AspNetCore.Authorization.IAllowAnonymous>() != null)
+        if (IsAnonymousEndpoint())
         {
-            return AuthenticateResult.NoResult();
+            return Task.FromResult(AuthenticateResult.NoResult());
         }
 
-        if (!Request.Headers.TryGetValue(AuthConstants.ApiKeyHeaderName, out var extractedApiKey))
+        if (!TryExtractApiKey(out var extractedApiKey))
         {
-            return AuthenticateResult.Fail("Missing API Key");
+            return Task.FromResult(AuthenticateResult.Fail("Missing API Key"));
         }
 
         var apiKey = configuration["Authentication:ApiKey"];
 
         if (string.IsNullOrEmpty(apiKey))
         {
-            return AuthenticateResult.Fail("API Key not configured");
+            return Task.FromResult(AuthenticateResult.Fail("API Key not configured"));
         }
 
+        var cachedBytes = GetExpectedKeyBytes(apiKey);
+
+        if (!IsValidApiKey(extractedApiKey.ToString(), cachedBytes))
+        {
+            return Task.FromResult(AuthenticateResult.Fail("Invalid API Key"));
+        }
+
+        return Task.FromResult(CreateSuccessResult());
+    }
+
+    private bool IsAnonymousEndpoint()
+    {
+        var endpoint = Context.GetEndpoint();
+        return endpoint?.Metadata?.GetMetadata<Microsoft.AspNetCore.Authorization.IAllowAnonymous>() != null;
+    }
+
+    private bool TryExtractApiKey(out Microsoft.Extensions.Primitives.StringValues extractedApiKey)
+    {
+        return Request.Headers.TryGetValue(AuthConstants.ApiKeyHeaderName, out extractedApiKey);
+    }
+
+    private byte[] GetExpectedKeyBytes(string apiKey)
+    {
         // Cache the expected key bytes to avoid allocating a byte array per request.
         // Copy to locals to avoid thread-safety issues when caching logic updates.
         var cachedKey = _cachedApiKey;
@@ -55,9 +76,12 @@ public class ApiKeyAuthenticationHandler(
             _cachedApiKey = cachedKey;
         }
 
-        var extractedStr = extractedApiKey.ToString();
+        return cachedBytes;
+    }
+
+    private bool IsValidApiKey(string extractedStr, byte[] expectedBytes)
+    {
         int maxBytes = Encoding.UTF8.GetMaxByteCount(extractedStr.Length);
-        bool isValid = false;
 
         // Use stackalloc for typical small keys to avoid heap allocation
         if (maxBytes <= 256)
@@ -65,19 +89,17 @@ public class ApiKeyAuthenticationHandler(
             Span<byte> providedKeySpan = stackalloc byte[maxBytes];
             int length = Encoding.UTF8.GetBytes(extractedStr, providedKeySpan);
             // Constant-time comparison to prevent timing attacks
-            isValid = CryptographicOperations.FixedTimeEquals(providedKeySpan[..length], cachedBytes);
+            return CryptographicOperations.FixedTimeEquals(providedKeySpan[..length], expectedBytes);
         }
         else
         {
             var providedKeyBytes = Encoding.UTF8.GetBytes(extractedStr);
-            isValid = CryptographicOperations.FixedTimeEquals(providedKeyBytes, cachedBytes);
+            return CryptographicOperations.FixedTimeEquals(providedKeyBytes, expectedBytes);
         }
+    }
 
-        if (!isValid)
-        {
-            return AuthenticateResult.Fail("Invalid API Key");
-        }
-
+    private AuthenticateResult CreateSuccessResult()
+    {
         var identity = new ClaimsIdentity(CachedClaims, Scheme.Name);
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, Scheme.Name);
