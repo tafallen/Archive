@@ -55,4 +55,38 @@ public class WeatherApiClientTests
         Assert.NotNull(result);
         Assert.Empty(result);
     }
+
+    [Fact]
+    public async Task GetWeatherForecastAsync_ThrowsHttpRequestException_WhenApiReturns500InternalServerError()
+    {
+        // Arrange
+        var mockHttp = new MockHttpMessageHandler();
+
+        mockHttp.When("/weatherforecast")
+                .Respond(System.Net.HttpStatusCode.InternalServerError);
+
+        var httpClient = mockHttp.ToHttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7005");
+        var client = new WeatherApiClient(httpClient);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetWeatherForecastAsync());
+    }
+
+    [Fact]
+    public async Task GetWeatherForecastAsync_ThrowsHttpRequestException_WhenApiReturns404NotFound()
+    {
+        // Arrange
+        var mockHttp = new MockHttpMessageHandler();
+
+        mockHttp.When("/weatherforecast")
+                .Respond(System.Net.HttpStatusCode.NotFound);
+
+        var httpClient = mockHttp.ToHttpClient();
+        httpClient.BaseAddress = new Uri("https://localhost:7005");
+        var client = new WeatherApiClient(httpClient);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<HttpRequestException>(() => client.GetWeatherForecastAsync());
+    }
 }
