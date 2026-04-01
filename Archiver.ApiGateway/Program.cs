@@ -32,6 +32,22 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
+// Validate internal API key configuration
+var internalApiKey = builder.Configuration["ReverseProxy:Routes:0:Transforms:0:Set"];
+if (string.IsNullOrEmpty(internalApiKey) || internalApiKey == "INTERNAL_API_KEY_REQUIRED")
+{
+    var message = "Internal API Key is not configured correctly. 'X-Internal-Key' transform is missing, empty, or set to placeholder.";
+    if (app.Environment.IsDevelopment())
+    {
+        app.Logger.LogWarning(message);
+    }
+    else
+    {
+        app.Logger.LogCritical(message);
+        throw new InvalidOperationException(message);
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
