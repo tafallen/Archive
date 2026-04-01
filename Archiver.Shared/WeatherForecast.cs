@@ -10,5 +10,5 @@ public readonly record struct WeatherForecast(DateOnly Date, int TemperatureC, s
     private const int ConversionNumerator = 9;
     private const int ConversionDenominator = 5;
 
-    public int TemperatureF => FahrenheitFreezingPoint + (int)((long)TemperatureC * ConversionNumerator / ConversionDenominator);
+    public int TemperatureF => FahrenheitFreezingPoint + (TemperatureC * ConversionNumerator / ConversionDenominator);
 }
