@@ -37,39 +37,31 @@ public class ConfigurationTests : IClassFixture<WebApplicationFactory<Program>>
         var root = document.RootElement;
 
         // Navigate: ReverseProxy -> Clusters -> serviceCluster -> Destinations
-        if (root.TryGetProperty("ReverseProxy", out var reverseProxy) &&
-            reverseProxy.TryGetProperty("Clusters", out var clusters))
+        if (!root.TryGetProperty("ReverseProxy", out var reverseProxy) ||
+            !reverseProxy.TryGetProperty("Clusters", out var clusters))
         {
-             // Check if Clusters is Object (Dictionary) or Array
-             if (clusters.ValueKind == JsonValueKind.Object)
-             {
-                 if (clusters.TryGetProperty("serviceCluster", out var serviceCluster) &&
-                     serviceCluster.TryGetProperty("Destinations", out var destinations))
-                 {
-                     // Destinations should be empty or default should not have Address
-                     if (destinations.ValueKind == JsonValueKind.Object)
-                     {
-                         if (destinations.TryGetProperty("default", out var def))
-                         {
-                             // If default exists, Address should be empty
-                             if (def.TryGetProperty("Address", out var address))
-                             {
-                                 Assert.True(string.IsNullOrEmpty(address.GetString()), "Address must be empty if present");
-                             }
-                         }
-                         else
-                         {
-                             // No default destination - GOOD
-                             Assert.True(true);
-                         }
-                     }
-                 }
-             }
-             else if (clusters.ValueKind == JsonValueKind.Array)
-             {
-                 // Handle Array case if reverted, but we expect Object now
-                 Assert.Fail("Clusters should be an Object (Dictionary) for consistent merging.");
-             }
+            return;
+        }
+
+        if (clusters.ValueKind == JsonValueKind.Array)
+        {
+            // Handle Array case if reverted, but we expect Object now
+            Assert.Fail("Clusters should be an Object (Dictionary) for consistent merging.");
+        }
+
+        if (clusters.ValueKind != JsonValueKind.Object)
+        {
+            return;
+        }
+
+        if (clusters.TryGetProperty("serviceCluster", out var serviceCluster) &&
+            serviceCluster.TryGetProperty("Destinations", out var destinations) &&
+            destinations.ValueKind == JsonValueKind.Object &&
+            destinations.TryGetProperty("default", out var def) &&
+            def.TryGetProperty("Address", out var address))
+        {
+            // If default exists, Address should be empty
+            Assert.True(string.IsNullOrEmpty(address.GetString()), "Address must be empty if present");
         }
     }
 
