@@ -32,6 +32,24 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
+// Configuration validation
+var configuration = app.Services.GetRequiredService<IConfiguration>();
+var internalApiKey = configuration["ReverseProxy:Routes:0:Transforms:0:Set"];
+if (string.IsNullOrEmpty(internalApiKey) || internalApiKey == "INTERNAL_API_KEY_REQUIRED")
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    if (app.Environment.IsDevelopment())
+    {
+        logger.LogWarning("X-Internal-Key is not properly configured. Using placeholder or empty value.");
+    }
+    else
+    {
+        logger.LogCritical("X-Internal-Key is NOT configured. Downstream services will reject requests.");
+        // In a real production scenario, we might want to throw an exception here
+        // throw new InvalidOperationException("X-Internal-Key must be configured in production.");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

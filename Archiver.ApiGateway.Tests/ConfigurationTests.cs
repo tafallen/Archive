@@ -32,6 +32,10 @@ public class ConfigurationTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.DoesNotContain("localhost:7001", json);
         Assert.DoesNotContain("REPLACE_ME", json);
 
+        // Verify X-Internal-Key is not empty (reported security vulnerability)
+        Assert.DoesNotContain("\"RequestHeader\": \"X-Internal-Key\",\n            \"Set\": \"\"", json.Replace("\r\n", "\n"));
+        Assert.Contains("\"Set\": \"INTERNAL_API_KEY_REQUIRED\"", json);
+
         // Structural check
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
@@ -70,6 +74,24 @@ public class ConfigurationTests : IClassFixture<WebApplicationFactory<Program>>
                  // Handle Array case if reverted, but we expect Object now
                  Assert.Fail("Clusters should be an Object (Dictionary) for consistent merging.");
              }
+        }
+    }
+
+    [Fact]
+    public void AppSettingsDevelopment_ContainsInternalApiKey()
+    {
+        var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json");
+
+        if (!File.Exists(jsonPath))
+        {
+             // Try to find it in the project folder if it's not in the bin folder
+             jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "..", "Archiver.ApiGateway", "appsettings.Development.json");
+        }
+
+        if (File.Exists(jsonPath))
+        {
+            var json = File.ReadAllText(jsonPath);
+            Assert.Contains("dev-internal-key-6d4f1e92-8c9a-4b7e-9f3d-5a2c1b8e0f4a", json);
         }
     }
 
