@@ -35,11 +35,6 @@ app.UseResponseCompression();
 app.UseAuthentication();
 app.UseAuthorization();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
 app.MapGet("/weatherforecast", () =>
 {
     // DateTime.Now captured outside loop for performance (verified in benchmarks)
@@ -53,7 +48,7 @@ app.MapGet("/weatherforecast", () =>
         (
             DateOnly.FromDayNumber(startDayNumber + i + 1),
             Random.Shared.Next(WeatherForecast.MinTemperatureC, WeatherForecast.MaxTemperatureC),
-            summaries[Random.Shared.Next(summaries.Length)]
+            WeatherForecast.Summaries[Random.Shared.Next(WeatherForecast.Summaries.Length)]
         );
     }
     return forecast;

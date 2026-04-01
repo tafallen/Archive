@@ -6,11 +6,6 @@ namespace Archiver.Benchmarks;
 [MemoryDiagnoser]
 public class WeatherForecastOptimizations
 {
-    private readonly string[] summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
     [Benchmark(Baseline = true)]
     public WeatherForecast[] UnoptimizedDateTime()
     {
@@ -21,7 +16,7 @@ public class WeatherForecastOptimizations
             (
                 DateOnly.FromDateTime(DateTime.Now.AddDays(i + 1)),
                 Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
+                WeatherForecast.Summaries[Random.Shared.Next(WeatherForecast.Summaries.Length)]
             );
         }
         return forecast;
@@ -38,7 +33,7 @@ public class WeatherForecastOptimizations
             (
                 today.AddDays(i + 1),
                 Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
+                WeatherForecast.Summaries[Random.Shared.Next(WeatherForecast.Summaries.Length)]
             );
         }
         return forecast;
