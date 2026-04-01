@@ -16,11 +16,6 @@ public class Program
 [MemoryDiagnoser]
 public class WeatherForecastBenchmark
 {
-    private readonly string[] summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
     [Benchmark(Baseline = true)]
     public WeatherForecast[] CurrentCode()
     {
@@ -31,7 +26,7 @@ public class WeatherForecastBenchmark
             (
                 today.AddDays(index),
                 Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
+                WeatherForecast.Summaries[Random.Shared.Next(WeatherForecast.Summaries.Length)]
             ))
             .ToArray();
         return forecast;
@@ -49,7 +44,7 @@ public class WeatherForecastBenchmark
             (
                 today.AddDays(i + 1),
                 Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
+                WeatherForecast.Summaries[Random.Shared.Next(WeatherForecast.Summaries.Length)]
             );
         }
         return forecast;
@@ -67,7 +62,7 @@ public class WeatherForecastBenchmark
             (
                 today.AddDays(i + 1),
                 Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
+                WeatherForecast.Summaries[Random.Shared.Next(WeatherForecast.Summaries.Length)]
             );
         }
         return forecast;

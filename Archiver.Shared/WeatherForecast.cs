@@ -2,6 +2,7 @@ namespace Archiver.Shared;
 
 public readonly record struct WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
+    public static readonly string[] Summaries = ["Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"];
     public const int MinTemperatureC = -20;
     public const int MaxTemperatureC = 55;
     public const int ForecastDays = 5;
