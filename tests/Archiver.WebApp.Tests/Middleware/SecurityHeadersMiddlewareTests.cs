@@ -37,7 +37,7 @@ public class SecurityHeadersMiddlewareTests
 
         // Assert
         Assert.True(context.Items.ContainsKey("csp-nonce"));
-        var nonce = context.Items["csp-nonce"] as string;
+        var nonce = context.Items["csp-nonce"]?.ToString();
         Assert.False(string.IsNullOrEmpty(nonce));
 
         var cspHeader = context.Response.Headers["Content-Security-Policy"].ToString();
