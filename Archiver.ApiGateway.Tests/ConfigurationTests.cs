@@ -89,4 +89,67 @@ public class ConfigurationTests : IClassFixture<WebApplicationFactory<Program>>
                     response.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable ||
                     response.StatusCode == System.Net.HttpStatusCode.BadGateway);
     }
+
+    [Fact]
+    public void AppSettings_InternalApiKey_IsPlaceholder()
+    {
+        var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
+        var json = File.ReadAllText(jsonPath);
+
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+
+        var routes = root.GetProperty("ReverseProxy").GetProperty("Routes");
+        bool foundTransform = false;
+
+        foreach (var route in routes.EnumerateArray())
+        {
+            if (route.TryGetProperty("Transforms", out var transforms))
+            {
+                foreach (var transform in transforms.EnumerateArray())
+                {
+                    if (transform.TryGetProperty("RequestHeader", out var header) && header.GetString() == "X-Internal-Key")
+                    {
+                        var setVal = transform.GetProperty("Set").GetString();
+                        Assert.Equal("INTERNAL_API_KEY_REQUIRED", setVal);
+                        foundTransform = true;
+                    }
+                }
+            }
+        }
+
+        Assert.True(foundTransform, "X-Internal-Key transform not found in appsettings.json");
+    }
+
+    [Fact]
+    public void AppSettingsDevelopment_InternalApiKey_IsConfigured()
+    {
+        var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "appsettings.Development.json");
+        var json = File.ReadAllText(jsonPath);
+
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+
+        var routes = root.GetProperty("ReverseProxy").GetProperty("Routes");
+        bool foundTransform = false;
+
+        foreach (var route in routes.EnumerateArray())
+        {
+            if (route.TryGetProperty("Transforms", out var transforms))
+            {
+                foreach (var transform in transforms.EnumerateArray())
+                {
+                    if (transform.TryGetProperty("RequestHeader", out var header) && header.GetString() == "X-Internal-Key")
+                    {
+                        var setVal = transform.GetProperty("Set").GetString();
+                        Assert.False(string.IsNullOrEmpty(setVal));
+                        Assert.NotEqual("INTERNAL_API_KEY_REQUIRED", setVal);
+                        foundTransform = true;
+                    }
+                }
+            }
+        }
+
+        Assert.True(foundTransform, "X-Internal-Key transform not found in appsettings.Development.json");
+    }
 }
